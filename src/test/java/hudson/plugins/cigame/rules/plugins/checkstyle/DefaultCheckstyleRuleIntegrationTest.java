@@ -11,10 +11,10 @@ import org.jvnet.hudson.test.recipes.LocalData;
 public class DefaultCheckstyleRuleIntegrationTest extends HudsonTestCase {
 
     @LocalData
-    public void testNoPointsAwardedForFirstBuild() throws Exception {
+    public void testFixingPointsAwardedForFirstBuild() throws Exception {
         FreeStyleBuild build = ((FreeStyleProject) hudson.getItem("checkstyle-first")).scheduleBuild2(0).get();
         assertBuildStatusSuccess(build);
-        assertPointsForBuildEquals(build, 1);
+        assertPointsForBuildEquals(build, 5);
         assertPointsForRuleEquals(build, Messages.CheckstyleRuleSet_Title(), 0);
     }
 
@@ -30,7 +30,7 @@ public class DefaultCheckstyleRuleIntegrationTest extends HudsonTestCase {
     public void testNoPointsAwardedAsLastBuildFailed() throws Exception {
         FreeStyleBuild build = ((FreeStyleProject) hudson.getItem("checkstyle-previous-failed")).scheduleBuild2(0).get();
         assertBuildStatusSuccess(build);
-        assertPointsForBuildEquals(build, 1);
+        assertPointsForBuildEquals(build, 5);
         assertPointsForRuleEquals(build, Messages.CheckstyleRuleSet_Title(), 0);
     }
 

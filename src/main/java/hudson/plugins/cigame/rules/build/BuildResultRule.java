@@ -11,15 +11,19 @@ import hudson.plugins.cigame.model.RuleResult;
 public class BuildResultRule implements Rule {
 
     private int failurePoints;
+    private int breakPoints;
     private int successPoints;
+    private int healPoints;
 
     public BuildResultRule() {
-        this(1, -10);
+        this(1, 5, -1, -5);
     }
 
-    public BuildResultRule(int successPoints, int failurePoints) {
+    public BuildResultRule(int successPoints, int healPoints, int failurePoints, int breakPoints) {
         this.successPoints = successPoints;
         this.failurePoints = failurePoints;
+        this.breakPoints = breakPoints;
+        this.healPoints = healPoints;
     }
 
     public String getName() {
@@ -35,16 +39,34 @@ public class BuildResultRule implements Rule {
         return evaluate(result, lastResult);
     }
 
+    String resultMessageFor(Result result) {
+        if (result == null)
+          return "";
+
+        if (result.isBetterOrEqualTo(Result.SUCCESS)) {
+            return Messages.BuildRuleSet_BuildResult();
+        } else {
+            return Messages.BuildRuleSet_BuildFailed();
+        }
+    }
+
     RuleResult evaluate(Result result, Result lastResult) {
+        int points = 0;
+        
         if (result == Result.SUCCESS) {
-            return new RuleResult( successPoints, Messages.BuildRuleSet_BuildSuccess()); //$NON-NLS-1$
-        }
+          if ((lastResult == null) || lastResult.isWorseThan(Result.SUCCESS))
+            points = healPoints;
+          else
+            points = successPoints;
+        } 
+
         if (result == Result.FAILURE) {
-            if ((lastResult == null)
-                    || (lastResult.isBetterThan(Result.FAILURE))) {
-                return new RuleResult(failurePoints, Messages.BuildRuleSet_BuildFailed()); //$NON-NLS-1$
-            }
+          if ((lastResult == null) || lastResult.isBetterThan(Result.FAILURE))
+            points = breakPoints;
+          else
+            points = failurePoints;
         }
-        return null;
+
+        return new RuleResult(points, resultMessageFor(result));
     }
 }

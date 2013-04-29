@@ -14,7 +14,7 @@ public class DefaultViolationRuleIntegrationTest extends HudsonTestCase {
     public void testNoPointsAwardedForFirstBuild() throws Exception {
         FreeStyleBuild build = ((FreeStyleProject) hudson.getItem("checkstyle-first")).scheduleBuild2(0).get();
         assertBuildStatusSuccess(build);
-        assertPointsForBuildEquals(build, 1);
+        assertPointsForBuildEquals(build, 5);
         assertPointsForRuleSetEquals(build, Messages.ViolationRuleSet_Title(), 0);
     }
 
@@ -30,7 +30,7 @@ public class DefaultViolationRuleIntegrationTest extends HudsonTestCase {
     public void testNoPointsAwardedAsLastBuildFailed() throws Exception {
         FreeStyleBuild build = ((FreeStyleProject) hudson.getItem("checkstyle-previous-failed")).scheduleBuild2(0).get();
         assertBuildStatusSuccess(build);
-        assertPointsForBuildEquals(build, 1);
+        assertPointsForBuildEquals(build, 5);
         assertPointsForRuleSetEquals(build, Messages.ViolationRuleSet_Title(), 0);
     }
 
